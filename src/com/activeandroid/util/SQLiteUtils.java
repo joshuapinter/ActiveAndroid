@@ -27,8 +27,11 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Column.ConflictAction;
 import com.activeandroid.serializer.TypeSerializer;
 
+import java.lang.Long;
+import java.lang.String;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -105,6 +108,14 @@ public final class SQLiteUtils {
 		cursor.close();
 
 		return entities;
+	}
+	  
+	public static int intQuery(final String sql, final String[] selectionArgs) {
+        final Cursor cursor = Cache.openDatabase().rawQuery(sql, selectionArgs);
+        final int number = processIntCursor(cursor);
+        cursor.close();
+
+        return number;
 	}
 
 	public static <T extends Model> T rawQuerySingle(Class<? extends Model> type, String sql, String[] selectionArgs) {
@@ -319,8 +330,13 @@ public final class SQLiteUtils {
 			Constructor<?> entityConstructor = type.getConstructor();
 
 			if (cursor.moveToFirst()) {
+                /**
+                 * Obtain the columns ordered to fix issue #106 (https://github.com/pardom/ActiveAndroid/issues/106)
+                 * when the cursor have multiple columns with same name obtained from join tables.
+                 */
+                List<String> columnsOrdered = new ArrayList<String>(Arrays.asList(cursor.getColumnNames()));
 				do {
-					Model entity = Cache.getEntity(type, cursor.getLong(cursor.getColumnIndex(idName)));
+					Model entity = Cache.getEntity(type, cursor.getLong(columnsOrdered.indexOf(idName)));
 					if (entity == null) {
 						entity = (T) entityConstructor.newInstance();
 					}
@@ -348,6 +364,13 @@ public final class SQLiteUtils {
 
 		return entities;
 	}
+
+	private static int processIntCursor(final Cursor cursor) {
+        if (cursor.moveToFirst()) {
+            return cursor.getInt(0);
+	    }
+        return 0;
+    }
 
 	public static List<String> lexSqlScript(String sqlScript) {
 		ArrayList<String> sl = new ArrayList<String>();
