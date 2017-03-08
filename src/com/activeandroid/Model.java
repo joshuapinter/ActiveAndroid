@@ -63,7 +63,7 @@ public abstract class Model {
 		return mId;
 	}
 
-	public final void delete() {
+	public void delete() {
 		Cache.openDatabase().delete(mTableInfo.getTableName(), idName+"=?", new String[] { getId().toString() });
 		Cache.removeEntity(this);
 
