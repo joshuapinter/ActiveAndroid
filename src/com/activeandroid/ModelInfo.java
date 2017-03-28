@@ -29,14 +29,11 @@ import java.util.Map;
 
 import android.content.Context;
 
-import com.activeandroid.serializer.CalendarSerializer;
-import com.activeandroid.serializer.SqlDateSerializer;
-import com.activeandroid.serializer.TypeSerializer;
-import com.activeandroid.serializer.UtilDateSerializer;
-import com.activeandroid.serializer.FileSerializer;
+import com.activeandroid.serializer.*;
 import com.activeandroid.util.Log;
 import com.activeandroid.util.ReflectionUtils;
 import dalvik.system.DexFile;
+import org.joda.time.DateTime;
 
 final class ModelInfo {
 	//////////////////////////////////////////////////////////////////////////////////////
@@ -47,6 +44,7 @@ final class ModelInfo {
 	private Map<Class<?>, TypeSerializer> mTypeSerializers = new HashMap<Class<?>, TypeSerializer>() {
 		{
 			put(Calendar.class, new CalendarSerializer());
+			put(DateTime.class, new JodaDateTimeSerializer());
 			put(java.sql.Date.class, new SqlDateSerializer());
 			put(java.util.Date.class, new UtilDateSerializer());
 			put(java.io.File.class, new FileSerializer());
