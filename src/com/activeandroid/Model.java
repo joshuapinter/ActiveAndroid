@@ -175,9 +175,9 @@ public abstract class Model {
 		return (T) new Select().from(type).where(tableInfo.getIdName()+"=?", id).executeSingle();
 	}
 
-	public static <T extends Model> List<T> all(Class<T> type) {
-		return (List<T>) new Select().from(type).execute();
-	}
+//	public static <T extends Model> List<T> all(Class<T> type) {
+//		return (List<T>) new Select().from(type).execute();
+//	}
 
 	public static <T extends Model> T first(Class<T> type) {
 		return (T) new Select().from(type).executeSingle();
